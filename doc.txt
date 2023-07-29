@@ -1,0 +1,12 @@
+npm init
+npm i express dotenv mongoose bcryptjs jsonwebtoken cookie-parser 
+npm i -D nodemon
+
+//here -D means install as devDependencies
+
+------To use import syntax we will use ES6 module 
+Simple go to your package.jsona and add
+{
+"name" : "yourProjectName",
+"type" :"module"
+}
