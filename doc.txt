@@ -1,12 +1,174 @@
+---------BackEnd
+
 npm init
-npm i express dotenv mongoose bcryptjs jsonwebtoken cookie-parser 
+npm i express dotenv mongoose bcryptjs jsonwebtoken cookie-parser express-async-handler
+
+// express-async-handler is a middleware (In Express.js, middleware functions are used to handle HTTP requests before they reach their final endpoint (route handler). Middleware functions can perform tasks such as authentication, logging, data validation) 
+
 npm i -D nodemon
 
 //here -D means install as devDependencies
 
 ------To use import syntax we will use ES6 module 
+
 Simple go to your package.jsona and add
 {
 "name" : "yourProjectName",
 "type" :"module"
 }
+
+// dotenv
+
+NODE_ENV = development
+PORT = 5000
+
+// In server.js 
+import dotenv from "dotenv";
+dotenv.config();
+const port = process.env.PORT || 5000;
+
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.get("/", (req, res) => res.send("Server is ready"));
+app.listen(port, () => console.log(`The server is running on port ${port}`));
+
+
+// The primary purpose of using a dotenv file is to separate sensitive or configurable information from your codebase.
+Security: Some configuration values, like passwords, access tokens, or API keys, should not be stored directly in the source code. By using a dotenv file, you keep these sensitive pieces of information separate from the codebase and prevent accidental exposure through version control systems or code reviews.
+
+//------------POSTMAN
+You can simply open postman and start sending request but we can also do something like below:
+
+create new Workspace and save as collection
+create new collection rename it as you want
+create new Env variable and set
+baseURL to http://localhost:5000/api
+
+now go to your workspace and send a post request as
+
+{{basURL}}/users/auth
+
+you should get this message 
+{
+    "message": "Auth User"
+} 
+
+**TIP**:
+This would be convenient for you if you would add each request for your routes in your collection. This would make easier for you later on to get data etc. 
+
+-----------------handling error
+we dont want to use JS default error handler we will create our own custom error handler
+it will do 2 jobs
+1. for routes not found
+2. for errors inside the existing routes
+so create a middleware folder inside the backend
+and create and errorMiddleware.js file
+
+// In errorMiddleware.js 
+const notFound = (req, res, next) => {
+  const error = new Error(`Not Found - ${req.originalUrl}`);
+  res.status(404);
+  next(error);
+};
+
+const errorHandler = (err, req, res, next) => {
+  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  let message = err.message;
+  if (err.name === "CastError" && err.kind === "ObjectId") {
+    statusCode = 404;
+    message = "Resource not found";
+  }
+  res.status(statusCode).json({
+    message: message,
+    stack: process.env.NODE_ENV === "production" ? null : err.stack,
+  });
+};
+
+export {notFound, errorHandler}
+
+-----How to use this errorMiddleware file
+simple go to your parent file called server.js
+// In server.js
+
+import { notFound, errorHandler } from "./middlerware/errorMiddleware.js";
+app.use(notFound)
+app.use(errorHandler)
+
+
+IMPORTANT:
+your sever file is connected with routes file (which contains all the routes) and your routes file is connected with 
+controller file which contains all the logic happeding inside routes defined in routes.js
+Moreover, since we have created errorMiddleware file and we have connected it with server.js file so its will check for 
+errors not only in server.js but also in routes.js and controller.js as well.
+
+you can test your errorMiddleware by intentionally thorwing an error inside your controller function as
+  
+  const authUser = asyncHandler(async (req, res) => {
+
+  res.status(401);
+  throw new Error('Something went wrong')
+
+  res.status(200).json({ message: "Auth User" });
+});
+
+now send request from postman we must see your custom error
+
+---------------Connecting to DB
+
+https://mongoosejs.com/docs/
+
+
+create a folder called config inside that create a file called db.js
+first of all go to the monogodb wesite create a data base and connect it by clicking on drivers get the db url 
+and paste it into your env folder. 
+
+// In db.js
+import mongoose from 'mongoose';
+
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI) 
+    console.log(`MongoDB connected: ${conn.connectoin.host}`)
+  } catch (err) {
+    console.error(`Error: ${error.message}`)
+    process.exit(1);
+
+  }
+}
+export default connectDB;
+
+// Now go to your server.js file
+import connectDB from "./config/db.js";
+connectDB();
+
+// output should be: MongoDB connected: ac-2md2mgj-shard-00-00.bhvqplp.mongodb.net
+
+Now create a folder called model and create a file inside it called userModel
+This file will contain our schemas and model
+Moreover you will hash you password in this file
+
+
+----Creating secret key:
+you can create this SECRET_KEY using this command in terminal
+require('crypto').randomBytes(64).toString('hex')
+
+-----running both frontend and backend at the same terminal
+npm install -D concurrently
+
+run this command not in frontend terminal but in the root terminal e.g mern_authentication in this case.
+
+now go to your package.json file and add the below code in your script tag
+"scripts" : {
+...
+"dev": "concurrently \"npm run server\" \"npm run client\"" 
+...
+}
+
+
+---------cleaning up vite set up files in frontend
+delete App.css
+clean code in App.jsx and replace yours
+clean index.css
+
