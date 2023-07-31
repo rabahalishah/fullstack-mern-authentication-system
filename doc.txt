@@ -154,6 +154,8 @@ Moreover you will hash you password in this file
 you can create this SECRET_KEY using this command in terminal
 require('crypto').randomBytes(64).toString('hex')
 
+----------frontend
+
 -----running both frontend and backend at the same terminal
 npm install -D concurrently
 
@@ -171,4 +173,9 @@ now go to your package.json file and add the below code in your script tag
 delete App.css
 clean code in App.jsx and replace yours
 clean index.css
+
+
+-------------React bootstrap
+now install 
+npm install react-bootstrap bootstrap react-icons
 

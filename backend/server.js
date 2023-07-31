@@ -16,6 +16,8 @@ app.use(express.json());
 // This is used for allowing us to use from data
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
+
+
 app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => res.send("Server is ready"));
