@@ -114,11 +114,24 @@ you can test your errorMiddleware by intentionally thorwing an error inside your
 });
 
 now send request from postman we must see your custom error
+-----------------ENV file
+NODE_ENV = development
+PORT = 5000
+MONGO_URI = mongodb+srv://rabah123:rabah3435@mernauth.bhvqplp.mongodb.net/mernauth?retryWrites=true&w=majority
+JWT_SECRET = abdsfdsc6342876c3n4374327c478rhf4873tr4
 
 ---------------Connecting to DB
 
+
 https://mongoosejs.com/docs/
 
+always remember: 
+mongodb+srv://rabah123:<password>@mernauth.bhvqplp.mongodb.net/?retryWrites=true&w=majority
+
+
+mongodb+srv://rabah123:rabah232@mernauth.bhvqplp.mongodb.net/mernauth?retryWrites=true&w=majority
+
+put name of your repo before question mark and replace password with your password
 
 create a folder called config inside that create a file called db.js
 first of all go to the monogodb wesite create a data base and connect it by clicking on drivers get the db url 
